@@ -33,7 +33,7 @@ export interface IChainConfig {
 }
 
 export interface IContracts {
-  decimals: number;
+  decimals?: number;
   names: string[];
   contracts: {
     [index: string]: {

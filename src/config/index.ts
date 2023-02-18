@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Chains, IConnectWallet, IContracts } from 'types';
+import { toHex } from 'web3-utils';
 
-import { factoryAbi } from './abi';
+import { erc721Abi } from './abi/erc721.Abi';
 import { isMainnet } from './constants';
 
 export const chains: {
@@ -25,9 +26,11 @@ export const chains: {
         provider: {
           rpc: {
             rpc: {
-              [isMainnet ? 137 : 80001]: isMainnet ? 'https://polygon-rpc.com/' : 'https://rpc-mumbai.maticvigil.com/',
+              [isMainnet ? 137 : toHex(80001)]: isMainnet
+                ? 'https://polygon-rpc.com/'
+                : 'https://rpc-mumbai.maticvigil.com/',
             },
-            chainId: isMainnet ? 137 : 80001,
+            chainId: isMainnet ? 137 : toHex(80001),
           },
         },
       },
@@ -48,8 +51,7 @@ export const connectWallet = (newChainName: Chains): IConnectWallet => {
 };
 
 export enum ContractsNames {
-  staking = 'staking',
-  factory = 'factory',
+  erc721 = 'erc721',
 }
 
 export type IContractsNames = keyof typeof ContractsNames;
@@ -57,19 +59,18 @@ export type IContractsNames = keyof typeof ContractsNames;
 // TODO: Add mainnet contracts addresses
 export const contractsConfig: IContracts = {
   names: Object.keys(ContractsNames),
-  decimals: 18,
   contracts: {
-    [ContractsNames.factory]: {
+    [ContractsNames.erc721]: {
       address: {
-        [Chains.plg]: isMainnet ? '' : '0x6333bAD1632ae2a78CfC4aD4AEc6C99B1b54CdBD',
+        [Chains.plg]: isMainnet ? '' : '0x89d5177cF90cC375508407d28cAF7cfa49E113bd',
       },
-      abi: factoryAbi,
+      abi: erc721Abi,
     },
   },
 };
 
 export const networkDataForAddToMetamask = {
-  chainID: isMainnet ? 137 : 80001,
+  chainID: isMainnet ? '137' : '80001',
   chainName: isMainnet ? 'Polygon Mainnet' : 'Mumbai Testnet',
   rpcUrls: isMainnet ? 'https://polygon-rpc.com/' : 'https://rpc-mumbai.maticvigil.com/',
   blockExplorerUrls: [isMainnet ? 'https://polygonscan.com/' : 'https://mumbai.polygonscan.com/'],

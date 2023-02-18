@@ -1,50 +1,35 @@
-import { useEffect, useState } from 'react';
-import bridge from '@vkontakte/vk-bridge';
+import { useState } from 'react';
 import { AdaptivityProvider, AppRoot, ConfigProvider, SplitCol, SplitLayout, View } from '@vkontakte/vkui';
+import { Layout, NotificationsModal, NotificationsModalContext } from 'containers';
 import { WalletConnectContext } from 'services';
-import { camelize } from 'utils';
 
-import Home from './panels/Home';
-import Persik from './panels/Persik';
+import { Authorization, Home } from './panels';
 
 import '@vkontakte/vkui/dist/vkui.css';
+import './styles/styles.scss';
 
 const App = () => {
-  const [activePanel, setActivePanel] = useState('home');
-  const [fetchedUser, setUser] = useState(null);
-  // const [popout, setPopout] = useState(<ScreenSpinner size="large" />);
-  useEffect(() => {
-    let canceled = false;
-    async function fetchData() {
-      const user = await bridge.send('VKWebAppGetUserInfo');
-      if (canceled) return;
-      setUser(camelize(user));
-      // setPopout(null);
-    }
-    fetchData();
-    return () => {
-      canceled = true;
-    };
-  }, []);
+  const [activePanel, setActivePanel] = useState('authorization');
 
-  const go = (e) => {
-    setActivePanel(e.currentTarget.dataset.to);
-  };
   return (
     <ConfigProvider>
       <AdaptivityProvider>
-        <WalletConnectContext>
-          <AppRoot>
-            <SplitLayout>
-              <SplitCol>
-                <View activePanel={activePanel}>
-                  <Home id="home" fetchedUser={fetchedUser} />
-                  <Persik id="persik" go={go} />
-                </View>
-              </SplitCol>
-            </SplitLayout>
-          </AppRoot>
-        </WalletConnectContext>
+        <NotificationsModalContext>
+          <WalletConnectContext>
+            <AppRoot>
+              <SplitLayout modal={<NotificationsModal />}>
+                <SplitCol>
+                  <Layout setActivePanel={setActivePanel}>
+                    <View activePanel={activePanel}>
+                      <Authorization id="authorization" />
+                      <Home id="home" />
+                    </View>
+                  </Layout>
+                </SplitCol>
+              </SplitLayout>
+            </AppRoot>
+          </WalletConnectContext>
+        </NotificationsModalContext>
       </AdaptivityProvider>
     </ConfigProvider>
   );

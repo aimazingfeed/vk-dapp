@@ -15,6 +15,7 @@ import { baseApi } from 'api/baseApi';
 import { chains, networkDataForAddToMetamask } from 'config';
 import { Subscription } from 'rxjs';
 import { Chains, WalletProviders } from 'types';
+import { shortenPhrase } from 'utils';
 import Web3 from 'web3';
 import { provider as web3Provider } from 'web3-core';
 import { toChecksumAddress } from 'web3-utils';
@@ -79,7 +80,11 @@ const WalletConnectContext: FC<WalletConnectContextProps> = ({ children }) => {
       const chain = Chains.plg;
       let userAddress: string;
       try {
+        const { data: addresses } = await baseApi.getAddresses();
         const connected = await WalletConnect.initWalletConnect(provider, chain);
+        if (addresses?.length) {
+          [userAddress] = addresses;
+        }
         if (connected) {
           try {
             const accountInfo: any = await WalletConnect.getAccount();
@@ -88,11 +93,12 @@ const WalletConnectContext: FC<WalletConnectContextProps> = ({ children }) => {
               throw new Error('Unexpected error');
             }
             if (accountInfo.address) {
-              if (address && toChecksumAddress(address) === toChecksumAddress(accountInfo.address)) {
+              if (userAddress && toChecksumAddress(userAddress) === toChecksumAddress(accountInfo.address)) {
                 setIsVerified(true);
-                return [address, WalletConnect.Web3()] as [string, Web3];
+                setAddress(userAddress);
+                return [userAddress, WalletConnect.Web3()] as [string, Web3];
               }
-              if (!address) {
+              if (!userAddress) {
                 const { data: message } = await baseApi.getNonce({ address });
                 const signature = await WalletConnect.Web3().eth.personal.sign(message, address, '');
                 const isSuccess = await baseApi.setAddressNonce({ address, signature });
