@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Cell, Div, Group, Panel, Spinner, useModalRootContext } from '@vkontakte/vkui';
+import { Cell, Group, useModalRootContext } from '@vkontakte/vkui';
 import { MetamaskLogo, WalletConnectLogo } from 'assets';
 import { useNotificationsContext } from 'containers/NotificationsContext';
 import { useWalletConnectorContext } from 'services';
@@ -18,32 +18,29 @@ export const ConnectWallet = () => {
       await connect(provider);
       setCurrentModal(Modals.init);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
     setIsLoading(false);
   };
 
-  // После установки стейта и перерисовки компонента SelectModal сообщим ModalRoot об изменениях
   useEffect(updateModalHeight, [updateModalHeight]);
 
   return (
-    <Div>
-      <Panel>
-        <Group className={styles.container}>
-          <Cell
-            className={styles.button}
-            disabled={isLoading}
-            before={<MetamaskLogo />}
-            onClick={() => handleButtonClick(WalletProviders.metamask)}
-          />
-          <Cell
-            className={styles.button}
-            disabled={isLoading}
-            before={<WalletConnectLogo />}
-            onClick={() => handleButtonClick(WalletProviders.walletConnect)}
-          />
-        </Group>
-      </Panel>
-    </Div>
+    <Group>
+      <Cell
+        disabled={isLoading}
+        onClick={() => handleButtonClick(WalletProviders.metamask)}
+        className={styles.connectButtonContainer}
+      >
+        <MetamaskLogo />
+      </Cell>
+      <Cell
+        disabled={isLoading}
+        onClick={() => handleButtonClick(WalletProviders.walletConnect)}
+        style={{ justifyContent: 'center' }}
+      >
+        <WalletConnectLogo />
+      </Cell>
+    </Group>
   );
 };

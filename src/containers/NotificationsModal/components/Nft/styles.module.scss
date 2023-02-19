@@ -1,0 +1,26 @@
+.container {
+  padding: 14px 26px;
+  &:nth-child(1) > div {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.nftImg {
+  align-self: center;
+  width: 300px;
+  height: 350px;
+  border-radius: 8px;
+
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+.text {
+  margin-bottom: 12px !important;
+  text-align: center;
+  &:last-child {
+    margin-bottom: 0 !important;
+    text-align: start;
+  }
+}

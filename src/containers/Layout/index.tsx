@@ -1,5 +1,7 @@
 import { Dispatch, FC, ReactNode, SetStateAction, useEffect } from 'react';
+import { PanelHeader, SegmentedControl } from '@vkontakte/vkui';
 import { useWalletConnectorContext } from 'services';
+import { WalletProviders } from 'types';
 
 export interface LayoutProps {
   children?: ReactNode;
@@ -7,7 +9,7 @@ export interface LayoutProps {
 }
 
 export const Layout: FC<LayoutProps> = ({ children, setActivePanel }) => {
-  const { address, isVerified } = useWalletConnectorContext();
+  const { address, isVerified, connect } = useWalletConnectorContext();
 
   useEffect(() => {
     if (!isVerified) {
@@ -18,8 +20,28 @@ export const Layout: FC<LayoutProps> = ({ children, setActivePanel }) => {
     }
   }, [address, isVerified, setActivePanel]);
 
+  useEffect(() => {
+    connect(WalletProviders.metamask);
+  }, [connect]);
+
   return (
-    <div>
+    <div style={{ padding: '0 14px' }}>
+      <PanelHeader>QM NFT</PanelHeader>
+      <SegmentedControl
+        onChange={(value) => setActivePanel(String(value))}
+        size="m"
+        style={{ marginTop: '14px' }}
+        options={[
+          {
+            label: 'Мои NFT',
+            value: 'home',
+          },
+          {
+            label: 'Создать NFT',
+            value: 'mint-nft',
+          },
+        ]}
+      />
       <main>{children}</main>
     </div>
   );

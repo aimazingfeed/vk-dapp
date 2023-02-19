@@ -99,16 +99,17 @@ const WalletConnectContext: FC<WalletConnectContextProps> = ({ children }) => {
                 return [userAddress, WalletConnect.Web3()] as [string, Web3];
               }
               if (!userAddress) {
-                const { data: message } = await baseApi.getNonce({ address });
-                const signature = await WalletConnect.Web3().eth.personal.sign(message, address, '');
-                const isSuccess = await baseApi.setAddressNonce({ address, signature });
+                const { data: message } = await baseApi.getNonce({ address: accountInfo.address });
+                const signature = await WalletConnect.Web3().eth.personal.sign(message, accountInfo.address, '');
+                const isSuccess = await baseApi.setAddressNonce({ address: accountInfo.address, signature });
                 if (isSuccess) {
                   setIsVerified(true);
                   setAddress(accountInfo.address);
                   userAddress = accountInfo.address;
+                  return [accountInfo.address, WalletConnect.Web3()] as [string, Web3];
                 }
               } else {
-                throw new Error(`Please connect wallet with address ${address}`);
+                throw new Error(`Please connect wallet with address ${userAddress}`);
               }
             }
             if (!currentSubscriber) {
@@ -117,7 +118,7 @@ const WalletConnectContext: FC<WalletConnectContextProps> = ({ children }) => {
               setCurrentSubscriber(sub);
             }
           } catch (error) {
-            console.log(error);
+            console.error(error);
             toast.error(error.message.text);
 
             // @ts-ignore
@@ -145,7 +146,7 @@ const WalletConnectContext: FC<WalletConnectContextProps> = ({ children }) => {
       }
       return [userAddress, WalletConnect.Web3()] as [string, Web3];
     },
-    [WalletConnect, address, currentSubscriber, subscriberError, subscriberSuccess],
+    [WalletConnect, currentSubscriber, subscriberError, subscriberSuccess],
   );
   const web3WithoutMetamask = () => {
     const [first] = Object.values(chains.Polygon.provider.WalletConnect.provider.rpc.rpc);

@@ -1,5 +1,5 @@
 export enum Modals {
   ConnectWallet = 'ConnectWallet',
-  DisconnectWallet = 'DisconnectWallet',
+  Nft = 'Nft',
   init = '',
 }
